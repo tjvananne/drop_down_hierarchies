@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>DropDowns</title>
+    
+</head>
+<body>
+    <h1>
+        hello world!
+    </h1>
+
+    <select id="select-problem" onchange='selection_changed(this)'>
+        <option value="" selected disabled hidden>---Select---</option>
+    </select>
+    <select id="select-failure" disabled onchange='selection_changed(this)'>
+        <option value="" selected disabled hidden>---Select---</option>
+    </select>
+    <select id="select-cause" disabled onchange='selection_changed(this)'>
+        <option value="" selected disabled hidden>---Select---</option>
+    </select>
+    <select id="select-action" disabled onchange='selection_changed(this)'>
+        <option value="" selected disabled hidden>---Select---</option>
+    </select>
+
+
+    <script src="hierarchy_json2.js"></script>
+
+</body>
+</html>
