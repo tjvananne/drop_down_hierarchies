@@ -73,11 +73,55 @@ function populate_select(p_array, p_selectid) {
 }
 
 
+
+function reset_select(p_selectid) {
+
+    // reset to default - repetition here, need to break this 
+    // out into another function?
+    var this_select = document.getElementById(p_selectid);
+    var default_option = document.createElement('option');
+    default_option.selected = true;
+    default_option.value = "";
+    default_option.innerHTML = "---Select---";
+    default_option.hidden = true;
+    this_select.add(default_option);
+
+    // disable this selection once again to complete the reset
+    this_select.disabled = true;
+    this_edit_btn = document.getElementById(map_dropdown_to_edit_btn(p_selectid));
+    this_edit_btn.disabled = true;
+}
+
+
+
+
 // we only need to pre-populate problem
 // the other drop downs will not be enabled until problem is selected
 populate_select(
     p_array=Object.keys(dropdown), 
     p_selectid="select-problem");
+
+
+// creating this functiont to map from selectid to button will help to
+// make sure buttons are only enabled when they should be
+function map_dropdown_to_edit_btn(p_selectid) {
+    if(p_selectid == "select-problem") {
+        btn_id = "edit-problem";
+    } else if(p_selectid == "select-failure") {
+        btn_id = "edit-failure";
+    } else if(p_selectid == "select-cause") {
+        btn_id = "edit-cause";
+    } else if(p_selectid == "select-action") {
+        btn_id = "edit-action";
+    }
+
+    // this already feels pretty "hacky", but would it have been better
+    // or worse to just use string replacement to remove "select" and
+    // add in "edit" to the string then return that as the btn id?
+
+    return(btn_id);
+}
+
 
 
 
@@ -91,6 +135,9 @@ function selection_changed(t) {
 
     // I want to isolate the array that will be used to update the next drop down here
     // I'm really not thrilled with "downstream_dropdowns", but not sure how else to do this?
+
+    // I think this if statement here could be a function itself... I have to do something
+    // very similar on the button click response
     if(id == "select-problem") {
         var downstream_dropdowns = ["select-failure", "select-cause", "select-action"];
         var next_dropdown_values = Object.keys(dropdown[new_selection])
@@ -122,6 +169,8 @@ function selection_changed(t) {
         var next_dropdown = document.getElementById(next_dropdown_id); 
         next_dropdown.options.length = 1;
 
+        //console.log(next_dropdown_id);
+
         // if there's one downstream dropdowns left, then
         // populate it with new values and enable it
         if(downstream_dropdowns.length == 0) {
@@ -129,12 +178,59 @@ function selection_changed(t) {
                 // double reverse! flea-flicker is next.
                 p_array=next_dropdown_values.reverse(),  
                 p_selectid=next_dropdown_id);
-    
-            next_dropdown.disabled=false;    
+                
+            // make this one active because it's the "next" dropdown
+            console.log("activating drop down and button for: ", next_dropdown_id);
+            next_dropdown.disabled = false;    
+            next_edit_btn = document.getElementById(map_dropdown_to_edit_btn(next_dropdown_id));
+            next_edit_btn.disabled = false;
+        } else {
+            reset_select(p_selectid=next_dropdown_id);
         }
     }
 }
 
+
+
+
+
+
+// edit list functionality (on edit list button click)
+function edit_list(t) {
+
+    var id = t.id;
+    var edit_list = document.getElementById("edit-list");
+    console.log("We had an edit-btn click on: ", id);
+
+
+    if(id == "edit-problem") {
+        var this_list = Object.keys(dropdown);
+    } else if(id == "edit-failure") {
+        var selected_problem = document.getElementById("select-problem").value;
+        var this_list = Object.keys(dropdown[selected_problem]);
+    } else if(id == "edit-cause") {
+        var selected_problem = document.getElementById("select-problem").value;
+        var selected_failure = document.getElementById("select-failure").value;
+        var this_list = Object.keys(dropdown[selected_problem][selected_failure]);
+    } else {
+        var selected_problem = document.getElementById("select-problem").value;
+        var selected_failure = document.getElementById("select-failure").value;
+        var selected_cause = document.getElementById("select-cause").value;
+        var this_list = dropdown[selected_problem][selected_failure][selected_cause];
+    }
+
+    for(i in this_list) {
+        console.log(this_list[i]);
+
+        var 
+
+        edit_list.add(document.createElement(''))
+    }
+
+}
+
+
+function create_edit_list_element()
 
 
 
