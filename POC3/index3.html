@@ -25,30 +25,37 @@
     <select id="select-problem" onchange='selection_changed(this)'>
         <option value="" selected disabled hidden>---Select---</option>
     </select>
-    <button id="edit-problem" onclick='edit_list(this)'>edit problems</button>
+    <button id="edit-problem" onclick='populate_edit_list(this)'>edit problems</button>
     <br>
 
     <select id="select-failure" disabled onchange='selection_changed(this)'>
         <option value="" selected disabled hidden>---Select---</option>
     </select>
-    <button id="edit-failure" onclick='edit_list(this)' disabled>edit failures associated to this problem</button>
+    <button id="edit-failure" onclick='populate_edit_list(this)' disabled>edit failures associated to this problem</button>
     <br> <!-- is this a good ::after use-case once I get to css? -->
 
 
     <select id="select-cause" disabled onchange='selection_changed(this)'>
         <option value="" selected disabled hidden>---Select---</option>
     </select>
-    <button id="edit-cause" onclick='edit_list(this)' disabled>edit causes associated to this problem/failure</button>
+    <button id="edit-cause" onclick='populate_edit_list(this)' disabled>edit causes associated to this problem/failure</button>
     <br>
 
     <select id="select-action" disabled onchange='selection_changed(this)'>
         <option value="" selected disabled hidden>---Select---</option>
     </select>
-    <button id="edit-action" onclick='edit_list(this)' disabled>edit actions associated to this problem/failure/cause</button>
+    <button id="edit-action" onclick='populate_edit_list(this)' disabled>edit actions associated to this problem/failure/cause</button>
 
     <!--   Body of Page: shows content of list being edited    -->
 
-    <div id="edit_list"></div>
+    <br>
+    <br>
+    <br>
+    <label>enter a new item</label>
+    <input type="text" id="new_item">
+    
+
+    <ol id="edit_list"></ol>
 
     <script src="hierarchy_json3.js"></script>
 
