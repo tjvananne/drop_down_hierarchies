@@ -1,4 +1,5 @@
 
+
 // poor man's database? kinda yea...
 dropdown = {
     "problem1": {
@@ -43,6 +44,7 @@ dropdown = {
     }
 }
 
+// given an array and the id of the select element, fill that element with the array
 function populate_select(p_array, p_selectid) {
 
     // takes in a parameter and the id of a select element
@@ -66,6 +68,7 @@ function populate_select(p_array, p_selectid) {
     }
 }
 
+// reset a select element to it's default and remove all of it's options
 function reset_select(p_selectid) {
 
     // takes in the id of a select element
@@ -183,24 +186,28 @@ function selection_changed(t) {
     }
 }
 
-
-// procedural portion of the code begins here -------------------------------------------------
-
-// this makes sure the very first select element is populated with
-// our highest level of the hierarchy (problem)
-// the other drop downs will not be enabled until problem is selected
-populate_select(
-    p_array=Object.keys(dropdown), 
-    p_selectid="select-problem");
-
-
-
-
-// edit list functionality (on edit list button click)
 function populate_edit_list(t) {
 
+    // edit list functionality (on edit list button click)
+    //debugger;
     var id = t.id;
     var edit_list = document.getElementById("edit-list");
+
+    // https://stackoverflow.com/questions/10750137/remove-all-li-from-ul
+    var edit_list_items = edit_list.getElementsByTagName('li');
+    var edit_list_lng = edit_list_items.length;
+    console.log(edit_list_items.length);
+
+    if(edit_list_items.length > 0) {
+        for(var i=0; i < edit_list_lng; i++) {
+            
+            // interesting, don't want to put 'i' in the index here
+            console.log("removing: ", edit_list_items[0]);
+            edit_list.removeChild(edit_list_items[0]);
+        }    
+    } else {
+        console.log("length of edit list is zero, moving on");
+    }
 
     // determine which button was clicked in the hierarchy
     if(id == "edit-problem") {
@@ -220,7 +227,7 @@ function populate_edit_list(t) {
     }
 
     
-    var edit_list = document.getElementById('edit_list'); 
+    var edit_list = document.getElementById('edit-list'); 
     
     for(i in this_list) {
 
@@ -248,49 +255,87 @@ function populate_edit_list(t) {
     }
 }
 
+function remove_item(t, list_item_id) {
 
-
-/*
-function helper_make_sequence(sequence_length) {
-    var result = [];
-    for(i = 0; i < sequence_length; i++) {
-        result[i] = i;
-    }
-    return(result);
-}
-*/
-
-
-// this will be a function --------------------------------------------------
-// that goes inside the "populate_edit_list" function that I commented out above
-
-
-
-function remove_item(t, item_id) {
-
-    console.log("yo we're trying to remove something");
-    // delete the list_item from the ordered list
-    // use .removeChild(element for text node);
-    // .removeChil(delement for 'remove' button); 
-
-    // remove this item from this specific piece of the dropdown hierarchy object
-    // use `delete()` function
     
+    var level = t.getAttribute('hierarchy_level');         // javascript object hierarchy level
+    var object_item_id = t.getAttribute('id');             // specific javascript object property name
+    var edit_list = document.getElementById('edit-list');  // edit list ordered list element
+
+    if(level == 'edit-problem') {
+
+        // delete the property from the `dropdown` javascript object
+        delete dropdown[object_item_id];     
+
+        // removed from the visible edit list
+        edit_list.removeChild(list_item_id); 
+
+        // identify the drop down select element
+        var this_selection = document.getElementById('select-problem');
+
+    } else if(level == 'edit-failure') {
+
+        delete dropdown[object_item_id];     
+        edit_list.removeChild(list_item_id); 
+        var this_selection = document.getElementById('select-failure');
+
+    } else if(level == 'edit-cause') {
+
+        delete dropdown[object_item_id];     
+        edit_list.removeChild(list_item_id); 
+        var this_selection = document.getElementById('select-cause');
+
+    } else if(level == 'edit-action') {
+
+        delete dropdown[object_item_id];     
+        edit_list.removeChild(list_item_id); 
+        var this_selection = document.getElementById('select-action');
+
+    } else {
+        // something went wrong? error handling?
+    }
+
+    // loop through the select element and remove the option that corresponds
+    for(i=0; i<this_selection.length; i++) {
+        if (this_selection.options[i].value==object_item_id) {
+            this_selection.remove(i);
+        }
+    }
+}
+
+
+function enter_new_item(t) {
+
+
+    // need to think about:
+    // 1) add item to selection dropdown for this hierarchy
+    // 2) add item to the edit-list ordered list
+    // 3) add item to the javascript object
+
+    var new_item = document.getElementById('new-item');
+
+    // 
 
 }
 
 
-//function create_edit_list_element()
+
+// also want to create a "now editing <hierarchy> in <specific higher-level properties>"
+
+
+// procedural portion of the code begins here -------------------------------------------------
+
+// this makes sure the very first select element is populated with
+// our highest level of the hierarchy (problem)
+// the other drop downs will not be enabled until problem is selected
+populate_select(
+    p_array=Object.keys(dropdown), 
+    p_selectid="select-problem");
+
 
 
 
 // references:
 // https://stackoverflow.com/questions/4366104/traversethroughjavascriptobjectproperties
-
-
-
-
-
-
 
 
