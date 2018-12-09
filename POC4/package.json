@@ -1,0 +1,14 @@
+{
+  "name": "poc4",
+  "version": "1.0.0",
+  "description": "POC4 - package the app in electron",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^3.0.10"
+  }
+}

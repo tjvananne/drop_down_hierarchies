@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>DropDowns</title>
+    
+</head>
+<body>
+
+    <!--   HEADER    -->
+
+    <h1>
+        Hierarchy Drop Down
+    </h1>
+    <p>
+        The point of this tool is to aid in the creation of drop down hierarchies.
+        I want the user building the hierarchy to be using the same format as the 
+        end-users of the hierarchy.
+    </p>
+
+    <!--   Drop Downs and Edit (add/remove) buttons    -->
+
+    <select id="select-problem" onchange='selection_changed(this)'>
+        <option value="" selected disabled hidden>---Select---</option>
+    </select>
+    <button id="edit-problem" onclick='populate_edit_list(this)'>edit problems</button>
+    <br>
+
+    <select id="select-failure" disabled onchange='selection_changed(this)'>
+        <option value="" selected disabled hidden>---Select---</option>
+    </select>
+    <button id="edit-failure" onclick='populate_edit_list(this)' disabled>edit failures associated to this problem</button>
+    <br> <!-- is this a good ::after use-case once I get to css? -->
+
+
+    <select id="select-cause" disabled onchange='selection_changed(this)'>
+        <option value="" selected disabled hidden>---Select---</option>
+    </select>
+    <button id="edit-cause" onclick='populate_edit_list(this)' disabled>edit causes associated to this problem/failure</button>
+    <br>
+
+    <select id="select-action" disabled onchange='selection_changed(this)'>
+        <option value="" selected disabled hidden>---Select---</option>
+    </select>
+    <button id="edit-action" onclick='populate_edit_list(this)' disabled>edit actions associated to this problem/failure/cause</button>
+
+    <!--   Body of Page: shows content of list being edited    -->
+
+    <br>
+    <br>
+    <br>
+    <h3 id="helper_msg"></h3>
+    <label>enter a new item</label>
+    <input type="text" id="new-item">
+    <button id="add-item" onclick='enter_new_item(this)'>Add to this list</button>
+    
+
+    <ol id="edit-list"></ol>
+
+    <script src="hierarchy.js"></script>
+
+</body>
+</html>
+
