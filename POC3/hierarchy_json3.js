@@ -1,6 +1,30 @@
 
 
+
+/* Notes to self
+
+So I've learned that managing state of the DOM is very challenging. In fact,
+this is what I read is the main benefit of using front end libraries/frameworks
+such as React. I didn't really understand what that pain point was ("managing
+state of the DOM") until this project. Now I get it.
+
+I think I could have more cleanly built this app by providing some global
+variables to maintain the state of what has been selected so far or not.
+Global variables (or at least at the document-level, is that global?) that 
+would indicate "ok, the first two dropdowns have selections in them 
+currently, so anything the user interacts with should know that."
+
+I'm currently not happy that the edit-list area is alphabetically sorted, but
+the select element drop downs are not. I wonder how difficult it would be to
+sort the select element drop downs? I have all of POC3 built though and don't
+want to let that slow me down so I'll come back to that later.
+
+*/
+
+
 // poor man's database? kinda yea...
+// should properties at the action level be 
+// empty quotes ("") or empty object ({})? does it matter?
 dropdown = {
     "problem1": {
         "p1failure1": {
@@ -63,7 +87,8 @@ function populate_select(p_array, p_selectid) {
     // take the array passed in and make these the new options
     for(i in p_array) {
         var this_option = document.createElement('option');
-        this_option.text = this_option.value = p_array[i];
+        this_option.text = p_array[i];
+        // this_option.text = this_option.value = p_array[i]; not sure why I was updating text and value?
         this_select.add(this_option);
     }
 }
@@ -186,6 +211,7 @@ function selection_changed(t) {
     }
 }
 
+// hierarchy level is "id" in this function
 function populate_edit_list(t) {
 
     // edit list functionality (on edit list button click)
@@ -198,6 +224,7 @@ function populate_edit_list(t) {
     var edit_list_lng = edit_list_items.length;
     console.log(edit_list_items.length);
 
+    // this loop is for clearing out anything that might exist in the list
     if(edit_list_items.length > 0) {
         for(var i=0; i < edit_list_lng; i++) {
             
@@ -212,23 +239,38 @@ function populate_edit_list(t) {
     // determine which button was clicked in the hierarchy
     if(id == "edit-problem") {
         var this_list = Object.keys(dropdown);
+        var helper_edit_msg = "Editing top-level problems:";
     } else if(id == "edit-failure") {
         var selected_problem = document.getElementById("select-problem").value;
         var this_list = Object.keys(dropdown[selected_problem]);
+        var helper_edit_msg = "Editing failures associated with " + selected_problem + " problem:";
     } else if(id == "edit-cause") {
         var selected_problem = document.getElementById("select-problem").value;
         var selected_failure = document.getElementById("select-failure").value;
         var this_list = Object.keys(dropdown[selected_problem][selected_failure]);
+        var helper_edit_msg = "Editing causes associated with " + selected_problem + 
+            " problem and " + selected_failure + " failure:";
     } else {
         var selected_problem = document.getElementById("select-problem").value;
         var selected_failure = document.getElementById("select-failure").value;
         var selected_cause = document.getElementById("select-cause").value;
         var this_list = Object.keys(dropdown[selected_problem][selected_failure][selected_cause]);
+        var helper_edit_msg = "Editing actions associated with " + selected_problem +
+            " problem and " + selected_failure + " failure and " + selected_cause + " cause:";
     }
 
+    // make sure the array is sorted:
+    this_list.sort();
+
+    // isolate and populate the h3 message to indicate to the user what theyre editing
+    var helper_header = document.getElementById('helper_msg');
+    helper_header.innerHTML = helper_edit_msg;
+ 
     
+    // isolate the list that will hold the editing stuff
     var edit_list = document.getElementById('edit-list'); 
-    
+
+   
     for(i in this_list) {
 
         // create the list item
@@ -253,8 +295,15 @@ function populate_edit_list(t) {
 
         edit_list.appendChild(list_item);
     }
+
+    // finally, set the "hierarchy_level" attribute of the "Add" button
+    // so that it knows which level of the hierarchy to add to.
+    var btn_add = document.getElementById('add-item');
+    btn_add.setAttribute('hierarchy_level', id);
+
 }
 
+// hierarchy level is "level" in this function... need to conform this
 function remove_item(t, list_item_id) {
 
     
@@ -303,9 +352,33 @@ function remove_item(t, list_item_id) {
     }
 }
 
+function it_already_exists(p_string, p_array) {
+    //debugger;
+    // catch issues of empty arrays
+    if(p_array.length < 1) {
+        return(false);
+    }
+
+    for(i=0; i < p_array.length; i++) {
+        // check if it already exists in the string
+        // character case is not enough to differentiate
+        if(p_string.toLowerCase() == p_array[i].toLowerCase()) {
+            return(true);
+        }
+    }
+
+    // if we made it this far, then the item is ok to be added
+    return(false);
+}
+
 
 function enter_new_item(t) {
 
+    //debugger;
+    // When one of the "edit" buttons is clicked, I'd like to assign (or re-assign)
+    // the "hierarchy_level" attribute of the submit button itself to whichever
+    // hierarchy was selected (which edit button).
+    // this is similar to how my "remove_item" functionality is working.
 
     // need to think about:
     // 1) add item to selection dropdown for this hierarchy
@@ -313,10 +386,96 @@ function enter_new_item(t) {
     // 3) add item to the javascript object
 
     var new_item = document.getElementById('new-item');
+    var level = t.getAttribute('hierarchy_level');
 
-    // 
+    // debugging
+    console.log(level);
+    console.log(new_item.value);
 
+
+    // in case we get to something is already in the list
+    var already_exists_msg = "this item already exists in this list";
+    var ok_to_add_new = false; // default this to false, update to true
+
+    // so I've done #3 to all of these, now I need to go back and do #1 and #2
+    if(level == 'edit-problem') {
+        var existing_list = Object.keys(dropdown);
+        if(it_already_exists(new_item.value, existing_list)) {
+            console.log(already_exists_msg);
+        } else {
+            ok_to_add_new = true;  // now it is ok to add item to select dropdown
+            // add this item to the object
+            dropdown[new_item.value] = {};
+
+            // identify which selection dropdown we'll need to change
+            var selection_to_change = document.getElementById('select-problem');
+        }
+    } else if(level == 'edit-failure') {
+        var selected_problem = document.getElementById('select-problem').value;
+        var existing_list = Object.keys(dropdown[selected_problem]);
+        if(it_already_exists(new_item.value, existing_list)) {
+            console.log(already_exists_msg);
+        } else {
+            ok_to_add_new = true;
+            // add this failure to this problem in the object
+            console.log("adding new failure...");
+            dropdown[selected_problem][new_item.value] = {};
+            var selection_to_change = document.getElementById('select-failure');
+        }
+    } else if(level == 'edit-cause') {
+        var selected_problem = document.getElementById('select-problem').value;
+        var selected_failure = document.getElementById('select-failure').value;
+        var existing_list = Object.keys(dropdown[selected_problem][selected_failure]);
+        if(it_already_exists(new_item.value, existing_list)) {
+            console.log(already_exists_msg);
+        } else {
+            ok_to_add_new = true;
+            // add this cause to this problem/failure combination
+            console.log("adding new cause");
+            dropdown[selected_problem][selected_failure][new_item.value] = {};
+            var selection_to_change = document.getElementById('select-cause');
+        }
+    } else if(level == 'edit-action') {
+        var selected_problem = document.getElementById('select-problem').value;
+        var selected_failure = document.getElementById('select-failure').value;
+        var selected_cause = document.getElementById('select-cause').value;
+        var existing_list = Object.keys(dropdown[selected_problem][selected_failure][selected_cause]);
+        if(it_already_exists(new_item.value, existing_list)) {
+            console.log(already_exists_msg);
+        } else {
+            ok_to_add_new = true;
+            // add this action to this problem/failure/cause combination
+            console.log("adding new action");
+            dropdown[selected_problem][selected_failure][selected_cause][new_item.value] = {};
+            var selection_to_change = document.getElementById('select-action');
+        }
+    }
+
+    // 1) EDIT THE SELECTION ELEMENT FOR THIS LEVEL
+    // ok_to_add_new is a state variable that is default set to false, but then
+    // updated to true if this new item the user is wanting to add doesn't exist
+    // already in the drop down object
+    if(ok_to_add_new) {
+        var new_option = document.createElement('option');
+        new_option.text = new_item.value;
+        selection_to_change.add(new_option);
+
+        // my populate_edit_list(t) function expects the edit button
+        // that corresponds to the hierarchy level. We'll identify that
+        // button here and pass it in to that function to populate
+        // the edit-list area. I'm aware this is hacky but I don't really
+        // have the maturity yet to know how to fix it.
+        var this_edit_btn = document.getElementById(level);
+        populate_edit_list(this_edit_btn);
+
+        // ok, querySelector would have been nice to know ~7 hours ago..
+        var new_item_textbox = document.querySelector('#new-item');
+        new_item_textbox.value = "";
+
+    }
 }
+
+
 
 
 

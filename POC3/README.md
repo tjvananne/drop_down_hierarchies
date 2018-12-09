@@ -25,3 +25,7 @@ success criteria:
 * [this js fiddle is really close to what I need for editing the list](http://jsfiddle.net/Gmyag/127/)
 * [this is a very robust version of what I might need](http://archive.oreilly.com/oreillyschool/courses/javascript2/DeletingTodoListItems.html)
 
+
+## Learnings:
+
+* I'm still getting used to the fact that most things have side-effects. when I call reverse or sort on an array, I don't have to "store" that into another variable to use. It is changed "in-place" which is something I'm not as used to. It is convenient once you're used to it though.
